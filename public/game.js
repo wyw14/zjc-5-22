@@ -3,6 +3,8 @@ const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 const questionText = document.getElementById('question-text');
 const optionBtns = document.querySelectorAll('.option-btn');
+const explanationArea = document.getElementById('explanation-area');
+const explanationText = document.getElementById('explanation-text');
 const hpBar = document.getElementById('hp-bar');
 const hpText = document.getElementById('hp-text');
 const scoreText = document.getElementById('score-text');
@@ -278,6 +280,7 @@ function showQuestion() {
     }
     const q = questions[currentIndex];
     questionText.textContent = q.expression + ' = ?';
+    explanationArea.classList.add('hidden');
     optionBtns.forEach((btn, i) => {
         btn.textContent = String(q.options[i]);
         btn.className = 'option-btn';
@@ -315,6 +318,7 @@ async function startGame() {
         startBtn.textContent = '重试';
         return;
     }
+    updateHUD();
     showQuestion();
 }
 function endGame() {
@@ -362,11 +366,13 @@ function handleAnswer(idx) {
         hp--;
         damageFlash = 15;
         spawnParticles(warrior.x, warrior.y - 20, 15, '#e74c3c');
+        explanationText.textContent = q.explanation;
+        explanationArea.classList.remove('hidden');
         if (hp <= 0) {
             setTimeout(() => {
                 isLocked = true;
                 endGame();
-            }, 800);
+            }, 2500);
             return;
         }
     }
@@ -374,7 +380,7 @@ function handleAnswer(idx) {
     updateHUD();
     setTimeout(() => {
         showQuestion();
-    }, correct ? 800 : 1000);
+    }, correct ? 800 : 2500);
 }
 optionBtns.forEach((btn, i) => {
     btn.addEventListener('click', () => handleAnswer(i));
